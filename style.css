@@ -1,0 +1,29 @@
+body {
+  background-color: #f0f0f0;
+  text-align: center;
+  font-family: sans-serif;
+}
+
+h1 {
+  margin: 20px 0;
+}
+
+/* 2x2 그리드 레이아웃 */
+.grid-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 1:1 비율로 2개 컬럼 */
+  gap: 20px; /* 사이 간격 */
+  max-width: 1920px; /* 전체 최대 너비 */
+  margin: 0 auto; /* 중앙 정렬 */
+  padding: 20px;
+}
+
+.grid-item {
+  background: white;
+  padding: 10px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
