@@ -27,10 +27,7 @@ let sketch4 = function(p) {
     p.noStroke();
     p.rect(0, waterY, p.width, p.height / 2);
 
-    // 5. 산과 물반영 그리기
-    drawMountainsAndReflections(waterY);
-
-    // 6. 해 물반영 그리기 (해가 물 위에 떠 있을 때만)
+    // 5. 해 물반영 그리기 (해가 물 위에 떠 있을 때만)
     drawSunReflection(sunPosition.x, sunPosition.y, waterY);
   };
 
@@ -61,6 +58,9 @@ let sketch4 = function(p) {
     let sunSize = 80;
 
     let sx = p.width * progress;
+
+    // 6. 산과 물반영 그리기
+    drawMountainsAndReflections(waterY);
 
     // 포물선 운동: (progress - 0.5)^2
     let parabola = p.pow(progress - 0.5, 2);
@@ -129,5 +129,6 @@ let sketch4 = function(p) {
     p.ellipse(sunX, sunReflectionY, reflectionWidth, reflectionHeight);
   }
 };
+
 
 new p5(sketch4, 'canvas4');
