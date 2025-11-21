@@ -3,32 +3,35 @@ let sketch4 = function(p) {
   let speed = 0.002;
 
   p.setup = function() {
-    // 캔버스 생성
     p.createCanvas(600, 400);
-    // 애니메이션을 위해 noLoop()는 사용하지 않습니다.
   };
 
   p.draw = function() {
-    // 1. 시간 흐름 진행
     sunProgress += speed;
     if (sunProgress > 1.0) {
-      sunProgress = 0.0; // 하루가 지나면 다시 0부터 시작 (Loop)
+      sunProgress = 0.0;
     }
 
-    // 2. 하늘 배경 그리기
     drawDynamicSky(sunProgress);
 
-    // 3. 해 위치 계산 및 그리기
-    let sunPosition = drawMovingSun(sunProgress);
-
-    // 4. 물 그리기
     let waterY = p.height / 2;
+
+    // 1. 산 반영 그리기
+    drawMountainReflections(waterY);
+
+    // 2. 물 그리기
     p.fill(16, 52, 108);
     p.noStroke();
     p.rect(0, waterY, p.width, p.height / 2);
 
-    // 5. 해 물반영 그리기 (해가 물 위에 떠 있을 때만)
+    // 3. 해 위치 계산 및 그리기
+    let sunPosition = drawMovingSun(sunProgress);
+
+    // 4. 해 물반영 그리기 (해가 물 위에 떠 있을 때만)
     drawSunReflection(sunPosition.x, sunPosition.y, waterY);
+
+    // 5. 실제 산 그리기 
+    drawMountains(waterY);
   };
 
   function drawDynamicSky(progress) {
@@ -59,9 +62,6 @@ let sketch4 = function(p) {
 
     let sx = p.width * progress;
 
-    // 6. 산과 물반영 그리기
-    drawMountainsAndReflections(waterY);
-
     // 포물선 운동: (progress - 0.5)^2
     let parabola = p.pow(progress - 0.5, 2);
     let sy = p.map(parabola, 0, 0.25, p.height * 0.1, p.height * 0.6);
@@ -70,10 +70,31 @@ let sketch4 = function(p) {
     p.noStroke();
     p.ellipse(sx, sy, sunSize, sunSize);
 
-    return {x: sx, y: sy, size: sunSize};
+    return {
+      x: sx,
+      y: sy,
+      size: sunSize
+    };
   }
 
-  function drawMountainsAndReflections(waterY) {
+  function drawMountains(waterY) {
+    let grayMtn = p.color(150, 150, 150);
+    let lightGreenMtn = p.color(60, 100, 85);
+    let darkGreenMtn = p.color(46, 82, 70);
+
+    p.noStroke();
+
+    p.fill(grayMtn);
+    p.triangle(p.width * 0.2, waterY, p.width * 0.5, p.height * 0.15, p.width * 0.75, waterY);
+
+    p.fill(darkGreenMtn);
+    p.triangle(p.width * 0.5, waterY, p.width * 0.9, p.height * 0.2, p.width, waterY);
+
+    p.fill(lightGreenMtn);
+    p.triangle(0, waterY, p.width * 0.35, p.height * 0.25, p.width * 0.6, waterY);
+  }
+
+  function drawMountainReflections(waterY) {
     let grayMtn = p.color(150, 150, 150);
     let lightGreenMtn = p.color(60, 100, 85);
     let darkGreenMtn = p.color(46, 82, 70);
@@ -85,7 +106,6 @@ let sketch4 = function(p) {
 
     p.noStroke();
 
-    // === 반영 (먼저 그림) ===
     p.fill(grayRef);
     p.triangle(p.width * 0.2, waterY, p.width * 0.5, waterY + (waterY - p.height * 0.15), p.width * 0.75, waterY);
 
@@ -94,17 +114,8 @@ let sketch4 = function(p) {
 
     p.fill(lightGreenRef);
     p.triangle(0, waterY, p.width * 0.35, waterY + (waterY - p.height * 0.25), p.width * 0.6, waterY);
-
-    // === 실제 산 ===
-    p.fill(grayMtn);
-    p.triangle(p.width * 0.2, waterY, p.width * 0.5, p.height * 0.15, p.width * 0.75, waterY);
-
-    p.fill(darkGreenMtn);
-    p.triangle(p.width * 0.5, waterY, p.width * 0.9, p.height * 0.2, p.width, waterY);
-
-    p.fill(lightGreenMtn);
-    p.triangle(0, waterY, p.width * 0.35, p.height * 0.25, p.width * 0.6, waterY);
   }
+
 
   function drawSunReflection(sunX, sunY, waterY) {
     // 해가 수평선 아래로 내려가면 반영을 그리지 않음
