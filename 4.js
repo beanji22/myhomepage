@@ -16,22 +16,25 @@ let sketch4 = function(p) {
 
     let waterY = p.height / 2;
 
-    // 1. 산 반영 그리기
+    // 1. 물에 비친 산의 반영 그리기 (가장 밑바닥)
     drawMountainReflections(waterY);
 
-    // 2. 물 그리기
+    // 2. 해 위치 계산 (아직 그리지 않고 위치만 계산)
+    let sunPosition = calculateSunPosition(sunProgress);
+
+    // 3. 물에 비친 해의 반영 그리기 (산의 반영 위에, 하지만 물과 실제 산에 의해 가려질 수 있음)
+    drawSunReflection(sunPosition.x, sunPosition.y, waterY);
+
+    // 4. 물 그리기 (해의 반영이 물에 잠기는 효과)
     p.fill(16, 52, 108);
     p.noStroke();
     p.rect(0, waterY, p.width, p.height / 2);
 
-    // 3. 해 위치 계산 및 그리기
-    let sunPosition = drawMovingSun(sunProgress);
-
-    // 4. 해 물반영 그리기 (해가 물 위에 떠 있을 때만)
-    drawSunReflection(sunPosition.x, sunPosition.y, waterY);
-
-    // 5. 실제 산 그리기 
+    // 5. 실제 산 그리기 (해와 해의 반영을 가릴 수 있도록)
     drawMountains(waterY);
+
+    // 6. 실제 해 그리기 (가장 위)
+    drawMovingSun(sunPosition);
   };
 
   function drawDynamicSky(progress) {
@@ -56,26 +59,27 @@ let sketch4 = function(p) {
     p.background(currentSky);
   }
 
-  function drawMovingSun(progress) {
-    let sunColor = p.color(255, 204, 0);
+  // 해의 위치만 계산하는 함수로 분리
+  function calculateSunPosition(progress) {
     let sunSize = 80;
-
     let sx = p.width * progress;
-
-    // 포물선 운동: (progress - 0.5)^2
     let parabola = p.pow(progress - 0.5, 2);
     let sy = p.map(parabola, 0, 0.25, p.height * 0.1, p.height * 0.6);
-
-    p.fill(sunColor);
-    p.noStroke();
-    p.ellipse(sx, sy, sunSize, sunSize);
-
     return {
       x: sx,
       y: sy,
       size: sunSize
     };
   }
+
+  // 계산된 해의 위치를 받아 실제로 그리는 함수
+  function drawMovingSun(sunPos) {
+    let sunColor = p.color(255, 204, 0);
+    p.fill(sunColor);
+    p.noStroke();
+    p.ellipse(sunPos.x, sunPos.y, sunPos.size, sunPos.size);
+  }
+
 
   function drawMountains(waterY) {
     let grayMtn = p.color(150, 150, 150);
